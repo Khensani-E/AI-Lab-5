@@ -81,29 +81,96 @@ If you need to install or upgrade a package in Colab, use:
 
 1.Explained Variance (PCA):
 
-- How many components are needed to explain ~95% of variance?
+- The first few principal components (PCs) contribute the most to the dataset’s variance. You can see steep bars for PC1, PC2, and PC3, which then taper off — classic “elbow” behavior.
+- This curve steadily climbs toward 1.0, meaning that as you add more components, you retain more of the original data’s variance. The curve flattens after a few components, signaling diminishing returns.
+- From the graph:
+
+The cumulative line crosses the 0.95 threshold around PC9 or PC10.
+
+That means 9–10 components are sufficient to retain 95% of the dataset’s variance.
 
 2.PCA vs. LDA:
 
-- Which gives better separation for the Wine dataset? Why?
+- PCA Projection:
+
+Projects data onto directions of maximum variance.
+
+Class clusters may overlap if variance doesn’t align with class boundaries.
+
+Logistic regression decision boundaries are broader and less crisp.
+
+- LDA Projection:
+
+Projects data onto axes that maximize inter-class separation.
+
+Clear, well-separated clusters with tight decision boundaries.
+
+Logistic regression performs better due to reduced intra-class variance and enhanced separability.
+
+-   Why LDA Typically Outperforms PCA for Classification
+Class Awareness: LDA uses label information to find the most discriminative features — PCA doesn’t.
+
+Dimensionality Reduction with Purpose: LDA reduces dimensions while preserving class structure, which is ideal for classifiers.
+
+Improved Decision Boundaries: As your LDA-transformed plot shows, logistic regression draws cleaner, more accurate boundaries.
+
+Noise Filtering: LDA suppresses variance that doesn’t help distinguish classes — PCA retains all variance, even irrelevant.
 
 3.KPCA Gamma Parameter:
 
-- What happens if γ is too small or too large?
+- γ = 0.01 → Underfitting
+The transformed data is only mildly curved, and the two classes (red triangles and blue circles) are not well separated.
+
+The kernel is too smooth — it fails to capture the nonlinear structure of the half-moon shapes.
+
+Linear separability is weak, and classifiers like logistic regression would struggle to draw clean boundaries.
+
+This is underfitting: the transformation is too coarse to reveal meaningful structure.
+
+- γ = 100 → Overfitting
+The transformed data is highly warped, with tight clusters and exaggerated separation.
+
+The kernel is too sharp — it overreacts to small differences between points.
+
+While the classes appear more separated, the transformation may be too sensitive to noise, leading to poor generalization.
+
+This is overfitting: the kernel captures fine-grained details that don’t help with robust classification.
 
 4.Classifier Performance:
 
 - Compare Logistic Regression accuracy on:
 
-  -- Original dataset
-  -- PCA-transformed dataset
-  --LDA-transformed dataset
+  -- Original Data: High accuracy, but slower due to full feature space.
+
+-- PCA: Slight drop in accuracy, faster training, no label awareness.
+
+-- LDA: Highest accuracy and fastest training — optimized for class separation.
 
 5.Limitations:
 
-- When does PCA fail?
+- It fails when the data has nonlinear patterns. A classic example from the lab:
 
-- How does KPCA fix this?
+Example: Half-Moon Dataset
+Two interleaved half-circle clusters.
+
+PCA projects them onto a linear subspace, but the classes remain entangled.
+
+Logistic regression on PCA-transformed data struggles to separate them.
+
+This is because PCA can’t “unfold” the curved geometry — it treats the moons as overlapping blobs.
+
+- Kernel PCA (KPCA) extends PCA by applying the kernel trick:
+
+It maps data into a higher-dimensional feature space using a nonlinear kernel (e.g., RBF).
+
+Then it performs PCA in that space, capturing nonlinear relationships.
+
+Example: KPCA on Half-Moon Data
+With γ = 15, KPCA transforms the moons into a space where they become linearly separable.
+
+Logistic regression now draws clean decision boundaries.
+
+The transformed scatter plot shows distinct clusters — a huge improvement over standard PCA.
 
 #### Summary
 
